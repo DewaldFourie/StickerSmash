@@ -50,6 +50,7 @@ export default function Index() {
   // Function to reset the app state to not show the app options
   const onReset = () => {
     setShowAppOptions(false);
+    setPickedEmoji(undefined);
   };
 
   // Function to add a sticker to the selected image
