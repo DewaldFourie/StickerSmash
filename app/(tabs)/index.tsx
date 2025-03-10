@@ -1,10 +1,11 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useState, useRef } from "react";
 import { type ImageSource } from "expo-image";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as MediaLibrary from "expo-media-library";
 import { captureRef } from "react-native-view-shot";
+import domtoimage from "dom-to-image";
 
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
@@ -63,19 +64,39 @@ export default function Index() {
 
   // Function to save the image to the device's gallery
   const onSaveImageAsync = async () => {
-    try {
-      const localUri = await captureRef(imageRef, {
-        height: 400,
-        quality: 1,
-      });
-
-      await MediaLibrary.saveToLibraryAsync(localUri);
-      if (localUri) {
-        alert('Saved!');
+    if ( Platform.OS !== 'web' ) {
+      try {
+        const localUri = await captureRef(imageRef, {
+          height: 400,
+          quality: 1,
+        });
+  
+        await MediaLibrary.saveToLibraryAsync(localUri);
+        if (localUri) {
+          alert('Saved!');
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      try {
+        // domtoimage.toJpeg() method to capture the current View and convert it to a JPEG image
+        const dataUrl = await domtoimage.toJpeg(imageRef.current, {
+          quality: 0.95,
+          width: 320,
+          height: 440,
+        });
+        
+        // create a link in the DOM and click it to download the image
+        let link = document.createElement('a');
+        link.download = 'sticker-smash.jpeg';
+        link.href = dataUrl;
+        link.click();
+      } catch (error) {
+        console.log(error);
+      }
     }
+
   }
 
 
