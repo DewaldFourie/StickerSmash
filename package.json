@@ -15,9 +15,12 @@
     "preset": "jest-expo",
     "reporters": [
       "default",
-      ["jest-json-reporter", {
-        "outputPath": "reports/test-summary.json"
-      }]
+      [
+        "jest-json-reporter",
+        {
+          "outputPath": "./reports/test-summary.json"
+        }
+      ]
     ]
   },
   "dependencies": {
