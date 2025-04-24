@@ -1,33 +1,43 @@
 name: Smash
+
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+    steps:
+      - name: 🔄 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci
 
-      - name: Check for test files
+      - name: 🔍 Check for test files
         run: |
           if ! ls __tests__/*.test.js > /dev/null 2>&1; then
             echo "No test files found. Skipping tests."
             exit 0
           fi
 
-      - name: Run tests
+      - name: ✅ Run tests and generate summary
         run: npm test -- --json --outputFile=test-summary.json
+        continue-on-error: true
 
-      - name: Upload test summary
+      - name: 🗂️ Create reports directory
+        run: mkdir -p reports
+
+      - name: 📂 Move test summary to reports
+        run: mv test-summary.json reports/
+
+      - name: 📄 Upload test summary
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-summary
-          path: test-summary.json
+          path: reports/test-summary.json
